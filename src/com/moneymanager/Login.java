@@ -1,8 +1,6 @@
 package com.moneymanager;
 
 import java.awt.Font;
-import java.awt.Insets;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
