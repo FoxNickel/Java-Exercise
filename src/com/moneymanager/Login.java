@@ -9,19 +9,20 @@ import javax.swing.JTextField;
 
 public class Login extends JFrame{
 	public Login(){
-		super();
+		//super();
 		setTitle("欢迎使用个人理财账本");//窗口标题
 		setSize(400,270);//设置窗口宽度和高度
 		setLocationRelativeTo(null);//设置窗口居中
 		getContentPane().setLayout(null);//Layout为空
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//将组件显示出来
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//可关闭的窗口
 		//主窗口
 		
 		JLabel welcome = new JLabel();
 		welcome.setText("欢迎使用个人理财系统");
 		welcome.setBounds(80, 10, 300, 20);//坐标，宽高
 		welcome.setFont(new Font(Font.DIALOG,Font.BOLD,20));//字体设置（字体类型，加粗，大小）
-		getContentPane().add(welcome);//文本框（显示欢迎提示）
+		getContentPane().add(welcome);//将组件显示出来
+		//文本框（显示欢迎提示）
 		
 		JLabel userName = new JLabel();
 		userName.setText("用户名:");
