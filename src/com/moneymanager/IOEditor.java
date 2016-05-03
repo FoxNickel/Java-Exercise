@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -57,20 +58,24 @@ public class IOEditor extends JFrame{
 		type.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(type);
 		
-		JTextField typeInput = new JTextField();
-		typeInput.setHorizontalAlignment(JTextField.CENTER);
-		typeInput.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
-		leftJpanel.add(typeInput);
+		String[] typechoice = { "收入", "支出" };
+		JComboBox<String> selsectTypeOfIO = new JComboBox<String>(typechoice);
+		selsectTypeOfIO.setEditable(true);
+		selsectTypeOfIO.setMaximumRowCount(2);
+		selsectTypeOfIO.setSelectedItem("收入");
+		leftJpanel.add(selsectTypeOfIO);
 		
 		JLabel content = new JLabel();
 		content.setText("内容:");
 		content.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(content);
 		
-		JTextField contentInput = new JTextField();
-		contentInput.setHorizontalAlignment(JTextField.CENTER);
-		contentInput.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
-		leftJpanel.add(contentInput);
+		String[] contentchoice = { "购物","餐饮","居家","交通","娱乐","人情","工资","奖金","其他" };
+		JComboBox<String> contentChoice = new JComboBox<String>(contentchoice);
+		contentChoice.setEditable(true);
+		contentChoice.setMaximumRowCount(4);
+		contentChoice.setSelectedItem("购物");
+		leftJpanel.add(contentChoice);
 		
 		JLabel money = new JLabel();
 		money.setText("金额:");
