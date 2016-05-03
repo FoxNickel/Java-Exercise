@@ -177,7 +177,7 @@ public class MainMenu extends JFrame {
 		// 个人总收支余额
 		JLabel sum = new JLabel();
 		sum.setText("个人总收支余额为5000元");
-		sum.setBounds(270, 25, 250, 20);
+		sum.setBounds(270, 20, 250, 20);
 		sum.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		bottomJpanel.add(sum);
 		// 个人总收支余额结束
