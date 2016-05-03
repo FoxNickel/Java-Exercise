@@ -1,7 +1,5 @@
 package com.moneymanager;
 
-import java.beans.Statement;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -22,10 +20,13 @@ public class Test{
 		try {
 			Connection conn = DriverManager.getConnection(URL,USERNAME,PASSWORD);
 			java.sql.Statement statement = conn.createStatement();
+			String insert = "insert into loginInfo(uid,upw) values('hdu','123')";
+			statement.executeUpdate(insert);
 			String sql = "select *from loginInfo";
 			ResultSet rs = statement.executeQuery(sql);
 			while(rs.next()){
-				
+				System.out.println(rs.getString(1));
+				System.out.println(rs.getString(2));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
