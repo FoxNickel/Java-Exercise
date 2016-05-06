@@ -10,7 +10,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class Login extends JFrame {
-	public Login(LoginInfo dataBase) {
+	public Login(DataBase dataBase) {
 		setTitle("欢迎使用个人理财账本");// 窗口标题
 		setSize(400, 270);// 设置窗口宽度和高度
 		setLocationRelativeTo(null);// 设置窗口居中
@@ -63,7 +63,7 @@ public class Login extends JFrame {
 				String userName1 = nameInput.getText().trim();
 				String passWord1 = passWordInput.getText().trim();
 				if (userName1.equals(dataBase.userName)&&passWord1.equals(dataBase.passWord)) {
-					MainMenu mainMenu = new MainMenu();
+					MainMenu mainMenu = new MainMenu(dataBase);
 					dispose();
 				}else{
 					//密码错误提示框

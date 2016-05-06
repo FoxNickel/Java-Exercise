@@ -63,6 +63,7 @@ public class IOEditor extends JFrame{
 		selsectTypeOfIO.setEditable(true);
 		selsectTypeOfIO.setMaximumRowCount(2);
 		selsectTypeOfIO.setSelectedItem(" ’»Î");
+		selsectTypeOfIO.setEditable(false);
 		leftJpanel.add(selsectTypeOfIO);
 		
 		JLabel content = new JLabel();
@@ -75,6 +76,7 @@ public class IOEditor extends JFrame{
 		contentChoice.setEditable(true);
 		contentChoice.setMaximumRowCount(4);
 		contentChoice.setSelectedItem("π∫ŒÔ");
+		contentChoice.setEditable(false);
 		leftJpanel.add(contentChoice);
 		
 		JLabel money = new JLabel();

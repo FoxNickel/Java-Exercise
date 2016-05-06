@@ -20,13 +20,16 @@ public class Test{
 		try {
 			Connection conn = DriverManager.getConnection(URL,USERNAME,PASSWORD);
 			java.sql.Statement statement = conn.createStatement();
-			String insert = "insert into loginInfo(uid,upw) values('hdu','123')";
-			statement.executeUpdate(insert);
-			String sql = "select *from loginInfo";
+//			String insert = "insert into IncomeAndSpending values('2015080101','20150801','收入','工资',5500)";
+//			statement.executeUpdate(insert);
+			String sql = "select *from IncomeAndSpending";
 			ResultSet rs = statement.executeQuery(sql);
 			while(rs.next()){
 				System.out.println(rs.getString(1));
 				System.out.println(rs.getString(2));
+				System.out.println(rs.getString(3));
+				System.out.println(rs.getString(4));
+				System.out.println(rs.getInt(5));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

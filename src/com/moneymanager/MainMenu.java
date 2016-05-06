@@ -31,7 +31,7 @@ import javax.xml.bind.JAXBContext;
 
 public class MainMenu extends JFrame {
 
-	public MainMenu() {
+	public MainMenu(DataBase dataBase) {
 		/* 主窗口 */
 		setTitle("欢迎使用个人理财账本");// 窗口标题
 		setSize(800, 750);// 设置窗口宽度和高度
@@ -55,7 +55,7 @@ public class MainMenu extends JFrame {
 		resetPassWord.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				changePassWord changePass = new changePassWord();
+				changePassWord changePass = new changePassWord(dataBase,MainMenu.this);
 				changePass.setVisible(true);
 			}
 		});
@@ -111,6 +111,7 @@ public class MainMenu extends JFrame {
 		selsectTypeOfIO.setEditable(true);
 		selsectTypeOfIO.setMaximumRowCount(2);
 		selsectTypeOfIO.setSelectedItem("收入");
+		selsectTypeOfIO.setEditable(false);
 		topIndexJpanel1.add(selsectTypeOfIO);// 选择收支类型的框
 
 		JButton search1 = new JButton();
@@ -198,8 +199,8 @@ public class MainMenu extends JFrame {
 		setVisible(true);// 显示所有组件
 	}
 
-	public static void main(String[] args) {
-		MainMenu mainMenu = new MainMenu();
-	}
+//	public static void main(String[] args) {
+//		MainMenu mainMenu = new MainMenu();
+//	}
 
 }

@@ -11,7 +11,7 @@ public class MainProgram {
 		final String URL = "jdbc:sqlserver://localhost:1433;DatabaseName=moneyManager";
 		final String USERNAME = "sa";
 		final String PASSWORD = "159753";
-		LoginInfo dataBase = new LoginInfo();
+		DataBase dataBase = new DataBase();
 		try {
 			Connection conn = DriverManager.getConnection(URL,USERNAME,PASSWORD);
 			java.sql.Statement statement = conn.createStatement();
@@ -28,6 +28,7 @@ public class MainProgram {
 			e.printStackTrace();
 		}
 		//初始化数据库结束
+		
 //		System.out.println(dataBase.userName);
 //		System.out.println(dataBase.passWord);
 		

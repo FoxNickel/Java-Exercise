@@ -1,6 +1,6 @@
 package com.moneymanager;
 
-public class LoginInfo {
+public class DataBase {
 	String userName;
 	String passWord;
 	static{
