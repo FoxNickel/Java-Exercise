@@ -5,12 +5,8 @@ package com.moneymanager;
 
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.nio.channels.SelectableChannel;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -21,22 +17,15 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.text.FieldView;
-import javax.xml.bind.JAXBContext;
 
 public class MainMenu extends JFrame {
 
@@ -85,7 +74,7 @@ public class MainMenu extends JFrame {
 		editIO.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				IOEditor iOEditor = new IOEditor();
+				IOEditor iOEditor = new IOEditor(dataBase);
 				iOEditor.setVisible(true);
 			}
 		});
@@ -211,9 +200,13 @@ public class MainMenu extends JFrame {
 		Object data[][] = new Object[50][5];
 		// 存放表格数据的二维数组
 		DefaultTableModel tableModel = new DefaultTableModel(data, columNames);
-		JTable sumTable = new JTable(tableModel);
+		JTable sumTable = new JTable(tableModel) {
+			@Override
+			public boolean isCellEditable(int arg0, int arg1) {
+				return false;
+			}
+		};
 		sumTable.setBounds(5, 50, 785, 400);
-		//sumTable.setModel(new DefaultTableModel(data,columNames));
 		// 将表格添加到可以滚动的Scroll中
 		JScrollPane tableScroll = new JScrollPane(sumTable);
 		tableScroll.setBounds(5, 50, 785, 400);
@@ -224,6 +217,7 @@ public class MainMenu extends JFrame {
 
 		setVisible(true);// 显示所有组件
 
+		// 条件查询监听事件（收入/支出）
 		search1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -231,7 +225,8 @@ public class MainMenu extends JFrame {
 				try {
 					Connection conn = DriverManager.getConnection(dataBase.URL, dataBase.USERNAME, dataBase.PASSWORD);
 					java.sql.Statement statement = conn.createStatement();
-					String select = "select *from IncomeAndSpending where rtype = '"+ selsectTypeOfIO.getSelectedItem().toString().trim()+"'";
+					String select = "select *from IncomeAndSpending where rtype = '"
+							+ selsectTypeOfIO.getSelectedItem().toString().trim() + "'";
 					ResultSet rs = statement.executeQuery(select);
 					tableModel.setRowCount(0);
 					while (rs.next()) {
@@ -240,102 +235,117 @@ public class MainMenu extends JFrame {
 						String type = rs.getString(3);
 						String item = rs.getString(4);
 						int balance = rs.getInt(5);
-						System.out.println(id + " " + date + " " + type + " " + item + " " + balance);
-						tableModel.addRow(new Object[] {id,date,type,item,balance});
+						// System.out.println(id + " " + date + " " + type + " "
+						// + item + " " + balance);
+						tableModel.addRow(new Object[] { id, date, type, item, balance });
 					}
 					rs.close();
-					conn.close();
 					statement.close();
+					conn.close();
 				} catch (SQLException ex) {
 					ex.printStackTrace();
 				}
 			}
 		});
-		// 条件选择监听事件（收入/支出）
-		// System.out.println(selsectTypeOfIO.getSelectedItem());// 点之前的选中状态
-		// 点之后的选中状态
-//		selsectTypeOfIO.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				// TODO 自动生成的方法存根
-//				if (((JComboBox) e.getSource()).getSelectedItem().equals("收入")) {
-//					System.out.println("你选中了收入");
-//					search1.addActionListener(new ActionListener() {
-//						@Override
-//						public void actionPerformed(ActionEvent e) {
-//							// TODO 自动生成的方法存根
-//							try {
-//								Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-//								java.sql.Statement statement = conn.createStatement();
-//								String select = "select *from IncomeAndSpending where rtype = '收入'";
-//								ResultSet rs = statement.executeQuery(select);
-//								int i = 0;
-//								tableModel.setRowCount(0);
-//								while (rs.next()) {
-//									String id = rs.getString(1);
-//									String date = rs.getString(2);
-//									String type = rs.getString(3);
-//									String item = rs.getString(4);
-//									int balance = rs.getInt(5);
-//									System.out.println(id + " " + date + " " + type + " " + item + " " + balance);
-////									sumTable.setValueAt(id, i, 0);
-////									sumTable.setValueAt(date, i, 1);
-////									sumTable.setValueAt(type, i, 2);
-////									sumTable.setValueAt(item, i, 3);
-////									sumTable.setValueAt(balance, i, 4);
-//									tableModel.addRow(new Object[] {id,date,type,item,balance});
-//									i++;
-//								}
-//								rs.close();
-//								conn.close();
-//								statement.close();
-//							} catch (SQLException ex) {
-//								ex.printStackTrace();
-//							}
-//						}
-//					});
-//				} else if (((JComboBox) e.getSource()).getSelectedItem().equals("支出")) {
-//					System.out.println("你选中了支出");
-//					search1.addActionListener(new ActionListener() {
-//						@Override
-//						public void actionPerformed(ActionEvent e) {
-//							// TODO 自动生成的方法存根
-//							try {
-//								Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-//								java.sql.Statement statement = conn.createStatement();
-//								String select = "select *from IncomeAndSpending where rtype = '支出'";
-//								ResultSet rs = statement.executeQuery(select);
-//								int i = 0;
-//								tableModel.setRowCount(0);
-//								while (rs.next()) {
-//									String id = rs.getString(1);
-//									String date = rs.getString(2);
-//									String type = rs.getString(3);
-//									String item = rs.getString(4);
-//									int balance = rs.getInt(5);
-//									System.out.println(id + " " + date + " " + type + " " + item + " " + balance);
-////									sumTable.setValueAt(id, i, 0);
-////									sumTable.setValueAt(date, i, 1);
-////									sumTable.setValueAt(type, i, 2);
-////									sumTable.setValueAt(item, i, 3);
-////									sumTable.setValueAt(balance, i, 4);
-//									tableModel.addRow(new Object[] {id,date,type,item,balance});
-//									i++;
-//								}
-//								rs.close();
-//								conn.close();
-//								statement.close();
-//							} catch (SQLException ex) {
-//								ex.printStackTrace();
-//							}
-//						}
-//					});
-//				}
-//			}
-//		});
-		// 点之后的选中状态
-		// 条件选择监听事件结束
+		// 条件查询监听事件结束
 
+		// 时间查询监听事件
+		search2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO 自动生成的方法存根
+				if (inputEndTime.getText().trim().compareTo(inputStartTime.getText().trim()) < 0
+						|| inputEndTime.getText().substring(6, 8).trim().compareTo("12") > 0) {
+					//输入错误提示框
+					JFrame error = new JFrame();
+					error.setTitle("Error");
+					error.setBounds(50,50,300, 200);
+					error.setLocationRelativeTo(null);
+					error.setVisible(true);
+					error.setLayout(null);
+					
+					JLabel errorText = new JLabel();
+					errorText.setText("您输入有误");
+					errorText.setBounds(75, 40, 250, 25);
+					errorText.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
+					error.add(errorText);
+					
+					JButton confirm = new JButton();
+					confirm.setText("确定");
+					confirm.setBounds(100, 90, 80, 40);
+					confirm.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+					confirm.setContentAreaFilled(false);
+					error.add(confirm);
+					
+					confirm.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							error.dispose();
+						}
+					});
+					//输入错误提示框
+				} else {
+					try {
+						Connection conn = DriverManager.getConnection(dataBase.URL, dataBase.USERNAME,
+								dataBase.PASSWORD);
+						java.sql.Statement statement = conn.createStatement();
+						String select = "select *from IncomeAndSpending where rdate >= "
+								+ inputStartTime.getText().toString().trim() + " AND rdate <= "
+								+ inputEndTime.getText().toString().trim() + "";
+						ResultSet rs = statement.executeQuery(select);
+						tableModel.setRowCount(0);
+						while (rs.next()) {
+							String id = rs.getString(1);
+							String date = rs.getString(2);
+							String type = rs.getString(3);
+							String item = rs.getString(4);
+							int balance = rs.getInt(5);
+							// System.out.println(id + " " + date + " " + type +
+							// " " + item + " " + balance);
+							tableModel.addRow(new Object[] { id, date, type, item, balance });
+						}
+						rs.close();
+						statement.close();
+						conn.close();
+					} catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+		});
+		// search2.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// // TODO 自动生成的方法存根
+		// try {
+		// Connection conn = DriverManager.getConnection(dataBase.URL,
+		// dataBase.USERNAME, dataBase.PASSWORD);
+		// String select2 = "select * from IncomeAndSpending where rdate>=? AND
+		// rdate<=?";
+		// PreparedStatement statement = conn.prepareStatement(select2);
+		// statement.setString(1, inputStartTime.getText().toString().trim());
+		// statement.setString(2, inputEndTime.getText().toString().trim());
+		// ResultSet rs = statement.executeQuery();
+		// tableModel.setRowCount(0);
+		// while (rs.next()) {
+		// String id = rs.getString(1);
+		// String date = rs.getString(2);
+		// String type = rs.getString(3);
+		// String item = rs.getString(4);
+		// int balance = rs.getInt(5);
+		// //System.out.println(id + " " + date + " " + type + " " + item + " "
+		// + balance);
+		// tableModel.addRow(new Object[] {id,date,type,item,balance});
+		// }
+		// rs.close();
+		// conn.close();
+		// statement.close();
+		// } catch (SQLException ex) {
+		// ex.printStackTrace();
+		// }
+		// }
+		// });
+		// 时间查询监听事件结束
 	}
 
 }

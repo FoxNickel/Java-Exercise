@@ -2,6 +2,16 @@ package com.moneymanager;
 
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.net.URI;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -13,17 +23,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
 
-public class IOEditor extends JFrame{
+public class IOEditor extends JFrame {
 
-	public IOEditor(){
-		setTitle("收支编辑");//窗口标题
-		setSize(900,400);//设置窗口宽度和高度
-		setLocationRelativeTo(null);//设置窗口居中
-		getContentPane().setLayout(null);//Layout为空
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//可关闭的窗口
-		
-		//编辑收支信息
+	public IOEditor(DataBase dataBase) {
+		setTitle("收支编辑");// 窗口标题
+		setSize(900, 400);// 设置窗口宽度和高度
+		setLocationRelativeTo(null);// 设置窗口居中
+		getContentPane().setLayout(null);// Layout为空
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);// 可关闭的窗口
+
+		// 编辑收支信息
 		Border leftTitleBorder = BorderFactory.createTitledBorder("编辑收支信息");
 		JPanel leftJpanel = new JPanel();
 		leftJpanel.setBorder(leftTitleBorder);
@@ -32,32 +43,32 @@ public class IOEditor extends JFrame{
 		GridLayout gridLayout1 = new GridLayout(5, 2);
 		gridLayout1.setVgap(5);
 		leftJpanel.setLayout(gridLayout1);
-		
+
 		JLabel number = new JLabel();
 		number.setText("编号：");
 		number.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(number);
-		
+
 		JTextField numberInput = new JTextField();
 		numberInput.setHorizontalAlignment(JTextField.CENTER);
 		numberInput.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(numberInput);
-		
+
 		JLabel data = new JLabel();
 		data.setText("日期:");
 		data.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(data);
-		
-		JTextField dataInput = new JTextField();
-		dataInput.setHorizontalAlignment(JTextField.CENTER);
-		dataInput.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
-		leftJpanel.add(dataInput);
-		
+
+		JTextField dateInput = new JTextField();
+		dateInput.setHorizontalAlignment(JTextField.CENTER);
+		dateInput.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+		leftJpanel.add(dateInput);
+
 		JLabel type = new JLabel();
 		type.setText("类型:");
 		type.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(type);
-		
+
 		String[] typechoice = { "收入", "支出" };
 		JComboBox<String> selsectTypeOfIO = new JComboBox<String>(typechoice);
 		selsectTypeOfIO.setEditable(true);
@@ -65,81 +76,225 @@ public class IOEditor extends JFrame{
 		selsectTypeOfIO.setSelectedItem("收入");
 		selsectTypeOfIO.setEditable(false);
 		leftJpanel.add(selsectTypeOfIO);
-		
+
 		JLabel content = new JLabel();
 		content.setText("内容:");
 		content.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(content);
-		
-		String[] contentchoice = { "购物","餐饮","居家","交通","娱乐","人情","工资","奖金","其他" };
+
+		String[] contentchoice = { "购物", "餐饮", "居家", "交通", "娱乐", "人情", "工资", "奖金", "其他" };
 		JComboBox<String> contentChoice = new JComboBox<String>(contentchoice);
 		contentChoice.setEditable(true);
 		contentChoice.setMaximumRowCount(4);
 		contentChoice.setSelectedItem("购物");
 		contentChoice.setEditable(false);
 		leftJpanel.add(contentChoice);
-		
+
 		JLabel money = new JLabel();
 		money.setText("金额:");
 		money.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(money);
-		
+
 		JTextField moneyInput = new JTextField();
 		moneyInput.setHorizontalAlignment(JTextField.CENTER);
 		moneyInput.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		leftJpanel.add(moneyInput);
-		//编辑收支信息
-		
-		//中间的五个Button
+		// 编辑收支信息
+
+		// 中间的五个Button
 		JButton insert = new JButton();
 		insert.setText("录入");
 		insert.setBounds(235, 10, 120, 60);
 		getContentPane().add(insert);
-		
+
 		JButton change = new JButton();
 		change.setText("修改");
 		change.setBounds(235, 80, 120, 60);
 		getContentPane().add(change);
-		
+
 		JButton delete = new JButton();
 		delete.setText("删除");
 		delete.setBounds(235, 150, 120, 60);
 		getContentPane().add(delete);
-		
+
 		JButton search = new JButton();
 		search.setText("查询");
 		search.setBounds(235, 220, 120, 60);
 		getContentPane().add(search);
-		
+
 		JButton clear = new JButton();
 		clear.setText("清空");
 		clear.setBounds(235, 290, 120, 60);
 		getContentPane().add(clear);
-		//中间的五个Button
-		
-		//右边的收支信息
+		// 中间的五个Button
+
+		// 右边的收支信息
 		Border rightTitleBorder = BorderFactory.createTitledBorder("显示收支信息");
 		JPanel rightJpanel = new JPanel();
 		rightJpanel.setBorder(rightTitleBorder);
 		rightJpanel.setBounds(360, 0, 520, 355);
 		rightJpanel.setLayout(null);
 		getContentPane().add(rightJpanel);
-		
-		String columNames[] = {"编号","日期","类型","内容","金额"};
-		Object data1[][] = new Object[50][5];
-		JTable sumTable = new JTable(data1, columNames);
-		sumTable.setBounds(5, 50, 785, 400);
-		//将表格添加到可以滚动的Scroll中
-		JScrollPane tableScroll = new JScrollPane(sumTable);
-		tableScroll.setBounds(5,20,510,400);
-		rightJpanel.add(tableScroll);
-		//右边的收支信息
-	}
-	
-	
-	public static void main(String[] args) {
-		IOEditor iOEditor= new IOEditor();
-		iOEditor.setVisible(true);
-	}
 
+		String columNames[] = { "编号", "日期", "类型", "内容", "金额" };
+		Object data1[][] = new Object[50][5];
+		DefaultTableModel tableModel = new DefaultTableModel(data1, columNames);
+		JTable sumTable = new JTable(tableModel);
+		sumTable.setBounds(5, 50, 785, 400);
+		// 将表格添加到可以滚动的Scroll中
+		JScrollPane tableScroll = new JScrollPane(sumTable);
+		tableScroll.setBounds(5, 20, 510, 400);
+		rightJpanel.add(tableScroll);
+		// 右边的收支信息
+
+		search.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO 自动生成的方法存根
+				try {
+					Connection conn = DriverManager.getConnection(dataBase.URL, dataBase.USERNAME, dataBase.PASSWORD);
+					java.sql.Statement statement = conn.createStatement();
+					String select = "select *from IncomeAndSpending";
+					ResultSet rs = statement.executeQuery(select);
+					tableModel.setRowCount(0);
+					while (rs.next()) {
+						String id = rs.getString(1);
+						String date = rs.getString(2);
+						String type = rs.getString(3);
+						String item = rs.getString(4);
+						int balance = rs.getInt(5);
+						// System.out.println(id + " " + date + " " + type + " "
+						// + item + " " + balance);
+						tableModel.addRow(new Object[] { id, date, type, item, balance });
+					}
+					rs.close();
+					statement.close();
+					conn.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+
+		insert.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO 自动生成的方法存根
+				try {
+					Connection conn = DriverManager.getConnection(dataBase.URL, dataBase.USERNAME, dataBase.PASSWORD);
+					java.sql.Statement statement = conn.createStatement();
+					String select = "select id from IncomeAndSpending";
+					ResultSet rSet = statement.executeQuery(select);
+					int i = 0;
+					while (rSet.next()) {
+						if (numberInput.getText().equals(rSet.getString(1))) {
+							//输入错误提示框
+							JFrame error = new JFrame();
+							error.setTitle("Error");
+							error.setBounds(50,50,300, 200);
+							error.setLocationRelativeTo(null);
+							error.setVisible(true);
+							error.setLayout(null);
+							
+							JLabel errorText = new JLabel();
+							errorText.setText("您输入有误");
+							errorText.setBounds(75, 40, 250, 25);
+							errorText.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
+							error.add(errorText);
+							
+							JButton confirm = new JButton();
+							confirm.setText("确定");
+							confirm.setBounds(100, 90, 80, 40);
+							confirm.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+							confirm.setContentAreaFilled(false);
+							error.add(confirm);
+							
+							confirm.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent arg0) {
+									error.dispose();
+								}
+							});
+							//输入错误提示框
+							numberInput.setText("");
+							rSet.close();
+							i++;
+						}
+					}
+					if(i==0){
+						String insert = "insert into IncomeAndSpending values(" + numberInput.getText().toString().trim()
+								+ "," + dateInput.getText().toString().trim() + ",'"
+								+ selsectTypeOfIO.getSelectedItem().toString().trim() + "','"
+								+ contentChoice.getSelectedItem().toString().trim() + "',"
+								+ Integer.valueOf(moneyInput.getText()) + ")";
+						statement.executeUpdate(insert);
+					}
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+
+		clear.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO 自动生成的方法存根
+				numberInput.setEditable(true);
+				numberInput.setText("");
+				dateInput.setText("");
+				moneyInput.setText("");
+			}
+		});
+		
+		sumTable.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO 自动生成的方法存根
+				
+			}
+			@Override
+			public void focusGained(FocusEvent e) {
+				int selectedRow = sumTable.getSelectedRow();
+				numberInput.setEditable(false);
+				numberInput.setText(sumTable.getValueAt(selectedRow, 0).toString());
+				dateInput.setText(sumTable.getValueAt(selectedRow, 1).toString());
+				selsectTypeOfIO.setSelectedItem(sumTable.getValueAt(selectedRow, 2));
+				contentChoice.setSelectedItem(sumTable.getValueAt(selectedRow, 3));
+				moneyInput.setText(sumTable.getValueAt(selectedRow, 4).toString());
+			}
+		});
+		
+		delete.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int selectedRow = sumTable.getSelectedRow();
+				try {
+					Connection connection = DriverManager.getConnection(dataBase.URL,dataBase.USERNAME,dataBase.PASSWORD);
+					Statement statement = connection.createStatement();
+					String delete = "delete from IncomeAndSpending where id = "+sumTable.getValueAt(selectedRow, 0).toString()+"";
+					statement.executeUpdate(delete);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		change.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO 自动生成的方法存根
+				int selectedRow = sumTable.getSelectedRow();
+				try {
+					Connection connection = DriverManager.getConnection(dataBase.URL,dataBase.USERNAME,dataBase.PASSWORD);
+					Statement statement = connection.createStatement();
+					String change = "update IncomeAndSpending set rdate = "+dateInput.getText()+",rtype = '"+selsectTypeOfIO.getSelectedItem().toString().trim()+"',ritem = '"+contentChoice.getSelectedItem().toString().trim()+"',bal = "+Integer.valueOf(moneyInput.getText())+" where id= "+sumTable.getValueAt(selectedRow, 0)+"";
+					statement.executeUpdate(change);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+	}
 }

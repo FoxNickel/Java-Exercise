@@ -69,8 +69,8 @@ public class changePassWord extends JFrame {
 		confirm.setBounds(40, 155, 130, 40);
 		getContentPane().add(confirm);// 登陆按钮
 
+		//修改密码块
 		confirm.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO 自动生成的方法存根
@@ -156,7 +156,6 @@ public class changePassWord extends JFrame {
 						}
 					});
 					//旧密码错误提示框
-					
 				}else if(!newPass.equals(newPass2)){
 					//两次输入的新密码不一致提示框
 					JFrame error = new JFrame();
@@ -189,6 +188,7 @@ public class changePassWord extends JFrame {
 				}
 			}
 		});
+		//修改密码块结束
 		
 		final JButton exit = new JButton();
 		exit.setText("取消");
@@ -204,10 +204,5 @@ public class changePassWord extends JFrame {
 		});
 		// 取消按钮的点击事件
 	}
-
-//	public static void main(String[] args) {
-//		changePassWord changePass = new changePassWord();
-//		changePass.setVisible(true);
-//	}
 
 }

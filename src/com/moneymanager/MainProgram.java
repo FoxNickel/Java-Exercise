@@ -7,15 +7,12 @@ import java.sql.SQLException;
 
 public class MainProgram {
 	public static void main(String[] args) {
-		//初始化数据库
-		final String URL = "jdbc:sqlserver://localhost:1433;DatabaseName=moneyManager";
-		final String USERNAME = "sa";
-		final String PASSWORD = "159753";
+		//登陆前调用数据库
 		DataBase dataBase = new DataBase();
 		try {
-			Connection conn = DriverManager.getConnection(URL,USERNAME,PASSWORD);
+			Connection conn = DriverManager.getConnection(dataBase.URL,dataBase.USERNAME,dataBase.PASSWORD);
 			java.sql.Statement statement = conn.createStatement();
-			String sql = "select *from loginInfo";
+			String sql = "select * from loginInfo";
 			ResultSet rs = statement.executeQuery(sql);
 			while(rs.next()){
 				dataBase.userName = rs.getString(1);
@@ -27,10 +24,7 @@ public class MainProgram {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//初始化数据库结束
-		
-//		System.out.println(dataBase.userName);
-//		System.out.println(dataBase.passWord);
+		//登陆前调用数据库结束
 		
 		//登陆界面
 		Login login = new Login(dataBase);

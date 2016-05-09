@@ -64,6 +64,7 @@ public class Login extends JFrame {
 				String passWord1 = passWordInput.getText().trim();
 				if (userName1.equals(dataBase.userName)&&passWord1.equals(dataBase.passWord)) {
 					MainMenu mainMenu = new MainMenu(dataBase);
+					mainMenu.setVisible(true);
 					dispose();
 				}else{
 					//ÃÜÂë´íÎóÌáÊ¾¿ò
