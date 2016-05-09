@@ -5,8 +5,16 @@ package com.moneymanager;
 
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.nio.channels.SelectableChannel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -25,6 +33,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.FieldView;
 import javax.xml.bind.JAXBContext;
@@ -55,7 +64,7 @@ public class MainMenu extends JFrame {
 		resetPassWord.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				changePassWord changePass = new changePassWord(dataBase,MainMenu.this);
+				changePassWord changePass = new changePassWord(dataBase, MainMenu.this);
 				changePass.setVisible(true);
 			}
 		});
@@ -76,7 +85,7 @@ public class MainMenu extends JFrame {
 		editIO.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				IOEditor iOEditor= new IOEditor();
+				IOEditor iOEditor = new IOEditor();
 				iOEditor.setVisible(true);
 			}
 		});
@@ -108,12 +117,25 @@ public class MainMenu extends JFrame {
 
 		String[] type = { "收入", "支出" };
 		JComboBox<String> selsectTypeOfIO = new JComboBox<String>(type);
-		selsectTypeOfIO.setEditable(true);
 		selsectTypeOfIO.setMaximumRowCount(2);
 		selsectTypeOfIO.setSelectedItem("收入");
 		selsectTypeOfIO.setEditable(false);
 		topIndexJpanel1.add(selsectTypeOfIO);// 选择收支类型的框
 
+		// selsectTypeOfIO.addItemListener(new ItemListener() {
+		// @Override
+		// public void itemStateChanged(ItemEvent e) {
+		// // TODO 自动生成的方法存根
+		// ItemSelectable is = e.getItemSelectable();
+		// if(is.getSelectedObjects()[0].toString().equals("收入")){
+		// System.out.println("你选中了收入");
+		// }else if (is.getSelectedObjects()[0].toString().equals("支出")) {
+		// System.out.println("你选中了支出");
+		// }
+		// //先用getItemSelectable()方法获得一个是否选中的ItemSelectable对象
+		// //再用该对象的getSelectedObjects()方法获得一个选中对象数组，再输出第一个元素即为选中的Item
+		// }
+		// });
 		JButton search1 = new JButton();
 		search1.setText("查询");
 		topIndexJpanel1.add(search1);// 查询按钮
@@ -184,10 +206,14 @@ public class MainMenu extends JFrame {
 		// 个人总收支余额结束
 
 		// 收支明细表格
+		// 存放表格数据的二维数组
 		String columNames[] = { "编号", "日期", "类型", "内容", "金额" };
 		Object data[][] = new Object[50][5];
-		JTable sumTable = new JTable(data, columNames);
+		// 存放表格数据的二维数组
+		DefaultTableModel tableModel = new DefaultTableModel(data, columNames);
+		JTable sumTable = new JTable(tableModel);
 		sumTable.setBounds(5, 50, 785, 400);
+		//sumTable.setModel(new DefaultTableModel(data,columNames));
 		// 将表格添加到可以滚动的Scroll中
 		JScrollPane tableScroll = new JScrollPane(sumTable);
 		tableScroll.setBounds(5, 50, 785, 400);
@@ -197,10 +223,119 @@ public class MainMenu extends JFrame {
 		/* 收支明细栏结束 */
 
 		setVisible(true);// 显示所有组件
-	}
 
-//	public static void main(String[] args) {
-//		MainMenu mainMenu = new MainMenu();
-//	}
+		search1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO 自动生成的方法存根
+				try {
+					Connection conn = DriverManager.getConnection(dataBase.URL, dataBase.USERNAME, dataBase.PASSWORD);
+					java.sql.Statement statement = conn.createStatement();
+					String select = "select *from IncomeAndSpending where rtype = '"+ selsectTypeOfIO.getSelectedItem().toString().trim()+"'";
+					ResultSet rs = statement.executeQuery(select);
+					tableModel.setRowCount(0);
+					while (rs.next()) {
+						String id = rs.getString(1);
+						String date = rs.getString(2);
+						String type = rs.getString(3);
+						String item = rs.getString(4);
+						int balance = rs.getInt(5);
+						System.out.println(id + " " + date + " " + type + " " + item + " " + balance);
+						tableModel.addRow(new Object[] {id,date,type,item,balance});
+					}
+					rs.close();
+					conn.close();
+					statement.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		// 条件选择监听事件（收入/支出）
+		// System.out.println(selsectTypeOfIO.getSelectedItem());// 点之前的选中状态
+		// 点之后的选中状态
+//		selsectTypeOfIO.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				// TODO 自动生成的方法存根
+//				if (((JComboBox) e.getSource()).getSelectedItem().equals("收入")) {
+//					System.out.println("你选中了收入");
+//					search1.addActionListener(new ActionListener() {
+//						@Override
+//						public void actionPerformed(ActionEvent e) {
+//							// TODO 自动生成的方法存根
+//							try {
+//								Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+//								java.sql.Statement statement = conn.createStatement();
+//								String select = "select *from IncomeAndSpending where rtype = '收入'";
+//								ResultSet rs = statement.executeQuery(select);
+//								int i = 0;
+//								tableModel.setRowCount(0);
+//								while (rs.next()) {
+//									String id = rs.getString(1);
+//									String date = rs.getString(2);
+//									String type = rs.getString(3);
+//									String item = rs.getString(4);
+//									int balance = rs.getInt(5);
+//									System.out.println(id + " " + date + " " + type + " " + item + " " + balance);
+////									sumTable.setValueAt(id, i, 0);
+////									sumTable.setValueAt(date, i, 1);
+////									sumTable.setValueAt(type, i, 2);
+////									sumTable.setValueAt(item, i, 3);
+////									sumTable.setValueAt(balance, i, 4);
+//									tableModel.addRow(new Object[] {id,date,type,item,balance});
+//									i++;
+//								}
+//								rs.close();
+//								conn.close();
+//								statement.close();
+//							} catch (SQLException ex) {
+//								ex.printStackTrace();
+//							}
+//						}
+//					});
+//				} else if (((JComboBox) e.getSource()).getSelectedItem().equals("支出")) {
+//					System.out.println("你选中了支出");
+//					search1.addActionListener(new ActionListener() {
+//						@Override
+//						public void actionPerformed(ActionEvent e) {
+//							// TODO 自动生成的方法存根
+//							try {
+//								Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+//								java.sql.Statement statement = conn.createStatement();
+//								String select = "select *from IncomeAndSpending where rtype = '支出'";
+//								ResultSet rs = statement.executeQuery(select);
+//								int i = 0;
+//								tableModel.setRowCount(0);
+//								while (rs.next()) {
+//									String id = rs.getString(1);
+//									String date = rs.getString(2);
+//									String type = rs.getString(3);
+//									String item = rs.getString(4);
+//									int balance = rs.getInt(5);
+//									System.out.println(id + " " + date + " " + type + " " + item + " " + balance);
+////									sumTable.setValueAt(id, i, 0);
+////									sumTable.setValueAt(date, i, 1);
+////									sumTable.setValueAt(type, i, 2);
+////									sumTable.setValueAt(item, i, 3);
+////									sumTable.setValueAt(balance, i, 4);
+//									tableModel.addRow(new Object[] {id,date,type,item,balance});
+//									i++;
+//								}
+//								rs.close();
+//								conn.close();
+//								statement.close();
+//							} catch (SQLException ex) {
+//								ex.printStackTrace();
+//							}
+//						}
+//					});
+//				}
+//			}
+//		});
+		// 点之后的选中状态
+		// 条件选择监听事件结束
+
+	}
 
 }
