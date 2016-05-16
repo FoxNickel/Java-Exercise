@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -29,7 +31,21 @@ import javax.swing.table.DefaultTableModel;
 
 public class MainMenu extends JFrame {
 
+	static boolean isDate(String date)
+	{
+		if(date.length()!=8) return false;
+		SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
+		try {
+			format.setLenient(false);
+			format.parse(date);
+		} catch (ParseException e) {
+			return false;
+		}
+		return true;
+	}
+	
 	public MainMenu(DataBase dataBase) {
+
 		/* 主窗口 */
 		setTitle("欢迎使用个人理财账本");// 窗口标题
 		setSize(800, 750);// 设置窗口宽度和高度
@@ -76,6 +92,7 @@ public class MainMenu extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				IOEditor iOEditor = new IOEditor(dataBase);
 				iOEditor.setVisible(true);
+				dispose();
 			}
 		});
 		// 收支编辑按钮的点击事件
@@ -111,20 +128,6 @@ public class MainMenu extends JFrame {
 		selsectTypeOfIO.setEditable(false);
 		topIndexJpanel1.add(selsectTypeOfIO);// 选择收支类型的框
 
-		// selsectTypeOfIO.addItemListener(new ItemListener() {
-		// @Override
-		// public void itemStateChanged(ItemEvent e) {
-		// // TODO 自动生成的方法存根
-		// ItemSelectable is = e.getItemSelectable();
-		// if(is.getSelectedObjects()[0].toString().equals("收入")){
-		// System.out.println("你选中了收入");
-		// }else if (is.getSelectedObjects()[0].toString().equals("支出")) {
-		// System.out.println("你选中了支出");
-		// }
-		// //先用getItemSelectable()方法获得一个是否选中的ItemSelectable对象
-		// //再用该对象的getSelectedObjects()方法获得一个选中对象数组，再输出第一个元素即为选中的Item
-		// }
-		// });
 		JButton search1 = new JButton();
 		search1.setText("查询");
 		topIndexJpanel1.add(search1);// 查询按钮
@@ -188,8 +191,7 @@ public class MainMenu extends JFrame {
 
 		// 个人总收支余额
 		JLabel sum = new JLabel();
-		sum.setText("个人总收支余额为5000元");
-		sum.setBounds(270, 20, 250, 20);
+		sum.setBounds(270, 20, 300, 20);
 		sum.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 		bottomJpanel.add(sum);
 		// 个人总收支余额结束
@@ -235,8 +237,6 @@ public class MainMenu extends JFrame {
 						String type = rs.getString(3);
 						String item = rs.getString(4);
 						int balance = rs.getInt(5);
-						// System.out.println(id + " " + date + " " + type + " "
-						// + item + " " + balance);
 						tableModel.addRow(new Object[] { id, date, type, item, balance });
 					}
 					rs.close();
@@ -254,36 +254,68 @@ public class MainMenu extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根
-				if (inputEndTime.getText().trim().compareTo(inputStartTime.getText().trim()) < 0
-						|| inputEndTime.getText().substring(6, 8).trim().compareTo("12") > 0) {
-					//输入错误提示框
+				//if (inputEndTime.getText().substring(4, 6).trim().compareTo("12") > 0||inputEndTime.getText().substring(6, 8).trim().compareTo("31") > 0) {
+				if(isDate(inputStartTime.getText())||isDate(inputEndTime.getText())){
+					inputStartTime.setText("");
+					inputEndTime.setText("");
+					// 输入错误提示框
 					JFrame error = new JFrame();
 					error.setTitle("Error");
-					error.setBounds(50,50,300, 200);
+					error.setBounds(50, 50, 300, 200);
 					error.setLocationRelativeTo(null);
 					error.setVisible(true);
 					error.setLayout(null);
-					
+
 					JLabel errorText = new JLabel();
-					errorText.setText("您输入有误");
-					errorText.setBounds(75, 40, 250, 25);
+					errorText.setText("输入时间有误");
+					errorText.setBounds(32, 40, 250, 25);
 					errorText.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
 					error.add(errorText);
-					
+
 					JButton confirm = new JButton();
 					confirm.setText("确定");
 					confirm.setBounds(100, 90, 80, 40);
 					confirm.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
 					confirm.setContentAreaFilled(false);
 					error.add(confirm);
-					
+
 					confirm.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							error.dispose();
 						}
 					});
-					//输入错误提示框
+					// 输入错误提示框
+				} else if (inputEndTime.getText().trim().compareTo(inputStartTime.getText().trim()) < 0) {
+					inputStartTime.setText("");
+					inputEndTime.setText("");
+					// 输入错误提示框
+					JFrame error = new JFrame();
+					error.setTitle("Error");
+					error.setBounds(50, 50, 300, 200);
+					error.setLocationRelativeTo(null);
+					error.setVisible(true);
+					error.setLayout(null);
+
+					JLabel errorText = new JLabel();
+					errorText.setText("起始日期大于终止日期");
+					errorText.setBounds(5, 40, 350, 25);
+					errorText.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
+					error.add(errorText);
+
+					JButton confirm = new JButton();
+					confirm.setText("确定");
+					confirm.setBounds(100, 90, 80, 40);
+					confirm.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+					confirm.setContentAreaFilled(false);
+					error.add(confirm);
+
+					confirm.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							error.dispose();
+						}
+					});
 				} else {
 					try {
 						Connection conn = DriverManager.getConnection(dataBase.URL, dataBase.USERNAME,
@@ -303,6 +335,7 @@ public class MainMenu extends JFrame {
 							// System.out.println(id + " " + date + " " + type +
 							// " " + item + " " + balance);
 							tableModel.addRow(new Object[] { id, date, type, item, balance });
+
 						}
 						rs.close();
 						statement.close();
@@ -313,39 +346,63 @@ public class MainMenu extends JFrame {
 				}
 			}
 		});
-		// search2.addActionListener(new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// // TODO 自动生成的方法存根
-		// try {
-		// Connection conn = DriverManager.getConnection(dataBase.URL,
-		// dataBase.USERNAME, dataBase.PASSWORD);
-		// String select2 = "select * from IncomeAndSpending where rdate>=? AND
-		// rdate<=?";
-		// PreparedStatement statement = conn.prepareStatement(select2);
-		// statement.setString(1, inputStartTime.getText().toString().trim());
-		// statement.setString(2, inputEndTime.getText().toString().trim());
-		// ResultSet rs = statement.executeQuery();
-		// tableModel.setRowCount(0);
-		// while (rs.next()) {
-		// String id = rs.getString(1);
-		// String date = rs.getString(2);
-		// String type = rs.getString(3);
-		// String item = rs.getString(4);
-		// int balance = rs.getInt(5);
-		// //System.out.println(id + " " + date + " " + type + " " + item + " "
-		// + balance);
-		// tableModel.addRow(new Object[] {id,date,type,item,balance});
-		// }
-		// rs.close();
-		// conn.close();
-		// statement.close();
-		// } catch (SQLException ex) {
-		// ex.printStackTrace();
-		// }
-		// }
-		// });
-		// 时间查询监听事件结束
+
+		// 收支总余额计算
+		try {
+			Connection conn = DriverManager.getConnection(dataBase.URL, dataBase.USERNAME, dataBase.PASSWORD);
+			java.sql.Statement statement = conn.createStatement();
+			String income = "select *from IncomeAndSpending where rtype = '收入'";
+			ResultSet rs1 = statement.executeQuery(income);
+			while (rs1.next()) {
+				int balance = rs1.getInt(5);
+				dataBase.income += balance;
+			}
+			String outcome = "select *from IncomeAndSpending where rtype = '支出'";
+			ResultSet rs2 = statement.executeQuery(outcome);
+			while (rs2.next()) {
+				int balance = rs2.getInt(5);
+				dataBase.outcome += balance;
+			}
+			dataBase.balance = dataBase.income - dataBase.outcome;
+			rs2.close();
+			rs1.close();
+			statement.close();
+			conn.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		sum.setText("个人总收支余额为" + dataBase.balance + "元");
+		if(dataBase.balance<0){
+			System.out.println("您已揭不开锅啦！！！");
+			JFrame info = new JFrame();
+			info.setTitle("Infomation");
+			info.setBounds(50, 50, 300, 200);
+			info.setLocationRelativeTo(null);
+			info.setVisible(true);
+			info.setLayout(null);
+			info.setAlwaysOnTop(true);
+
+			JLabel errorText = new JLabel();
+			errorText.setText("您已揭不开锅啦！！！");
+			errorText.setBounds(50, 40, 350, 25);
+			errorText.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
+			info.add(errorText);
+
+			JButton ok = new JButton();
+			ok.setText("确定");
+			ok.setBounds(100, 90, 80, 40);
+			ok.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+			ok.setContentAreaFilled(false);
+			info.add(ok);
+
+			ok.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					info.dispose();
+				}
+			});
+		}
+		// 收支总余额计算结束
 	}
 
 }

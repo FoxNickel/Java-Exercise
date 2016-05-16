@@ -129,6 +129,9 @@ public class changePassWord extends JFrame {
 					
 				}else if(!oldPass.equals(dataBase.passWord)){
 					//旧密码错误提示框
+					oldPassInput.setText("");
+					newPassInput.setText("");
+					newPassInput2.setText("");
 					JFrame error = new JFrame();
 					error.setTitle("Error");
 					error.setBounds(50,50,300, 200);
@@ -158,6 +161,9 @@ public class changePassWord extends JFrame {
 					//旧密码错误提示框
 				}else if(!newPass.equals(newPass2)){
 					//两次输入的新密码不一致提示框
+					oldPassInput.setText("");
+					newPassInput.setText("");
+					newPassInput2.setText("");
 					JFrame error = new JFrame();
 					error.setTitle("Error");
 					error.setBounds(50,50,300, 200);
