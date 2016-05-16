@@ -255,7 +255,7 @@ public class MainMenu extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO 自动生成的方法存根
 				//if (inputEndTime.getText().substring(4, 6).trim().compareTo("12") > 0||inputEndTime.getText().substring(6, 8).trim().compareTo("31") > 0) {
-				if(isDate(inputStartTime.getText())||isDate(inputEndTime.getText())){
+				if(!isDate(inputStartTime.getText())||!isDate(inputEndTime.getText())){
 					inputStartTime.setText("");
 					inputEndTime.setText("");
 					// 输入错误提示框
@@ -268,7 +268,7 @@ public class MainMenu extends JFrame {
 
 					JLabel errorText = new JLabel();
 					errorText.setText("输入时间有误");
-					errorText.setBounds(32, 40, 250, 25);
+					errorText.setBounds(50, 40, 250, 25);
 					errorText.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
 					error.add(errorText);
 
